@@ -25,21 +25,32 @@
 
 import { App, IObject, Plugin } from "siyuan"
 import { ILogger, simpleLogger } from "zhi-lib-base"
+import { Topbar } from "./topbar"
 
 import "../index.styl"
 import { isDev } from "./Constants"
 
 export default class AiGraphPlugin extends Plugin {
   private logger: ILogger
+  private topbar: Topbar
 
   constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
     super(options)
 
     this.logger = simpleLogger("index", "ai-graph", isDev)
+    this.topbar = new Topbar(this)
   }
 
-  onload() {
+  async onload() {
     this.logger.info("智能图谱插件已加载")
+
+    try {
+      // 初始化顶栏
+      await this.topbar.initTopbar()
+      this.logger.info("顶栏初始化完成")
+    } catch (error) {
+      this.logger.error("顶栏初始化失败:", error)
+    }
   }
 
   onunload() {

@@ -7,7 +7,7 @@
 - TypeScript - 主要开发语言
 - Vite - 构建工具
 - Vue.js - UI component framework
-- Stylus - CSS 预处理器
+- Stylus - CSS 预处理器 **[重要：必须使用 Stylus]**
 - siyuan - 思源笔记插件 API
 - zhi-lib-base - 基础工具库
 - g6 - 知识图谱可视化库
@@ -22,6 +22,8 @@
 - 变量命名采用 camelCase 格式
 - 常量命名采用 UPPER_SNAKE_CASE 格式
 - 使用 ESLint 和 Prettier 确保代码质量和一致性
+- ⚠️ 重要规范 ⚠️: 所有样式必须使用 Stylus 编写，禁止使用普通 CSS！
+- ⚠️ 重要规范 ⚠️: 所有图标定义在 `src/utils/svg.ts` 中，以统一管理，禁止在其他文件中重复定义！
 
 ### Architecture Patterns
 - 严格遵守思源笔记插件规范，目录结构如下：

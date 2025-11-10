@@ -1,3 +1,8 @@
 {
-    "aiGraph": "智能图谱"
+    "aiGraph": "智能图谱",
+    "aiGraphDescription": "根据您的笔记生成和可视化知识图谱",
+    "generateGraph": "生成图谱",
+    "exportGraph": "导出图谱",
+    "clickGenerateGraph": "点击'生成图谱'开始",
+    "generatingGraph": "正在生成图谱...请稍候。"
 }

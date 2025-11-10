@@ -1,3 +1,8 @@
 {
-  "aiGraph": "AI Graph"
+  "aiGraph": "AI Graph",
+  "aiGraphDescription": "Generate and visualize knowledge graph based on your notes",
+  "generateGraph": "Generate Graph",
+  "exportGraph": "Export Graph",
+  "clickGenerateGraph": "Click 'Generate Graph' to start",
+  "generatingGraph": "Generating graph... Please wait."
 }
