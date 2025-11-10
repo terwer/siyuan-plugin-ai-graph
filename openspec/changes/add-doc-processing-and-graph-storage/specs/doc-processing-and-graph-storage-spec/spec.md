@@ -48,7 +48,7 @@ interface Token {
 - **性能优化**: 前缀压缩、差值编码和查询结果缓存
 
 ### Requirement: 实体抽取功能
-系统 SHALL 实现实体抽取功能，以识别文档中的关键实体并为知识图谱构建提供基础数据。
+系统 SHALL 实现实体抽取功能，以识别文档中的关键实体并为知识图谱构建提供基础数据，同时预留大模型接口以支持高级实体识别。
 
 #### Scenario: 内置实体识别
 - **WHEN** 处理包含人名、地名、组织名的文档时
@@ -60,9 +60,18 @@ interface Token {
 - **THEN** 应能识别文档中的自定义实体
 - **THEN** 应正确分类并存储这些实体
 
+#### Scenario: 大模型实体识别
+- **WHEN** 启用大模型实体识别功能时
+- **THEN** 应调用配置的大模型API进行实体抽取
+- **THEN** 应将大模型返回的实体标准化并存储
+
 ### 技术实现
 - **实体类型**: 内置类型（人名、地名、组织名、时间、日期、数字）和自定义类型
-- **抽取方法**: 基于规则（正则、关键词、上下文）、基于词典和第三方NER模型支持
+- **抽取方法**: 
+  - 基于规则（正则、关键词、上下文）
+  - 基于词典
+  - 第三方NER模型支持
+  - 大模型API接口（预留）
 - **数据结构**:
 ```typescript
 interface Entity {
@@ -73,11 +82,36 @@ interface Entity {
   startPos: number;    // 在文档中的起始位置
   endPos: number;      // 在文档中的结束位置
   properties?: Record<string, any>; // 额外属性
+  source?: string;     // 实体来源（如'rule', 'dict', 'llm'）
+  confidence?: number; // 置信度
+}
+
+// 大模型接口定义
+interface EntityExtractor {
+  // 基于规则的实体抽取
+  extractByRules(text: string): Promise<Entity[]>;
+  
+  // 基于词典的实体抽取
+  extractByDictionary(text: string): Promise<Entity[]>;
+  
+  // 大模型实体抽取（预留接口）
+  extractByLLM(text: string): Promise<Entity[]>;
+  
+  // 配置大模型参数
+  configureLLM(options: LLMConfig): void;
+}
+
+interface LLMConfig {
+  apiKey?: string;
+  endpoint?: string;
+  model?: string;
+  temperature?: number;
+  promptTemplate?: string;
 }
 ```
 
 ### Requirement: 关系抽取功能
-系统 SHALL 实现实体关系抽取功能，以识别实体之间的关联关系并构建知识图谱的边连接。
+系统 SHALL 实现实体关系抽取功能，以识别实体之间的关联关系并构建知识图谱的边连接，同时预留大模型接口以支持高级关系识别。
 
 #### Scenario: 实体关系识别
 - **WHEN** 文档中包含多个相关实体时
@@ -89,9 +123,18 @@ interface Entity {
 - **THEN** 应能识别文档中的自定义关系
 - **THEN** 应正确分类并存储这些关系
 
+#### Scenario: 大模型关系识别
+- **WHEN** 启用大模型关系识别功能时
+- **THEN** 应调用配置的大模型API进行关系抽取
+- **THEN** 应将大模型返回的关系标准化并存储
+
 ### 技术实现
 - **关系类型**: 内置类型（关联、属于、包含、描述、引用）和自定义类型
-- **抽取方法**: 基于规则的模式匹配、实体共现分析和第三方关系抽取模型支持
+- **抽取方法**: 
+  - 基于规则的模式匹配
+  - 实体共现分析
+  - 第三方关系抽取模型支持
+  - 大模型API接口（预留）
 - **数据结构**:
 ```typescript
 interface Relationship {
@@ -102,6 +145,23 @@ interface Relationship {
   docId: string;               // 所属文档ID
   confidence: number;          // 置信度
   properties?: Record<string, any>; // 额外属性
+  source?: string;             // 关系来源（如'rule', 'cooccur', 'llm'）
+  evidenceText?: string;       // 支持该关系的文本证据
+}
+
+// 关系抽取器接口定义
+interface RelationshipExtractor {
+  // 基于规则的关系抽取
+  extractByRules(entities: Entity[], text: string): Promise<Relationship[]>;
+  
+  // 基于实体共现的关系抽取
+  extractByCooccurrence(entities: Entity[], text: string): Promise<Relationship[]>;
+  
+  // 大模型关系抽取（预留接口）
+  extractByLLM(entities: Entity[], text: string): Promise<Relationship[]>;
+  
+  // 配置大模型参数
+  configureLLM(options: LLMConfig): void;
 }
 ```
 
@@ -125,8 +185,90 @@ interface Relationship {
   - entities表（与documents的外键关系）
   - relationships表（与entities的外键关系）
   - inverted_index和index_entries表（搜索功能）
+  - entity_aliases表（实体别名，用于实体融合）
+  - entity_similarity表（实体相似度，用于实体融合）
 - **索引优化**: 全面的索引策略
 - **数据完整性**: 事务支持和外键约束
+
+### Requirement: 实体融合功能
+系统 SHALL 实现实体融合功能，以识别并合并相似或相同的实体，确保知识图谱中实体的唯一性和完整性。
+
+#### Scenario: 相似实体识别
+- **WHEN** 处理新文档并提取实体时
+- **THEN** 应与已有实体进行相似度比较
+- **THEN** 应识别潜在的相似实体对
+
+#### Scenario: 实体合并
+- **WHEN** 确定两个实体表示同一概念时
+- **THEN** 应合并实体信息
+- **THEN** 应更新相关的关系引用
+
+#### Scenario: 别名管理
+- **WHEN** 发现实体的新别名时
+- **THEN** 应记录别名关系
+- **THEN** 查询时应能识别别名关联
+
+### 技术实现
+- **实体相似度算法**:
+  - 基于字符串相似度（Levenshtein、Jaro-Winkler）
+  - 基于语义相似度（TF-IDF、Word2Vec）
+  - 支持大模型语义相似度计算（预留接口）
+- **实体融合策略**:
+  - 自动融合（基于阈值）
+  - 人工确认融合
+  - 批量融合操作
+- **数据结构**:
+```typescript
+interface EntityFusionService {
+  // 查找相似实体
+  findSimilarEntities(entity: Entity, threshold?: number): Promise<SimilarEntity[]>;
+  
+  // 合并实体
+  mergeEntities(sourceEntityId: number, targetEntityId: number): Promise<void>;
+  
+  // 添加实体别名
+  addEntityAlias(entityId: number, alias: string): Promise<void>;
+  
+  // 基于大模型计算语义相似度（预留接口）
+  calculateSemanticSimilarity(entity1: Entity, entity2: Entity): Promise<number>;
+  
+  // 配置大模型参数
+  configureLLM(options: LLMConfig): void;
+}
+
+interface SimilarEntity {
+  entityId: number;
+  name: string;
+  similarityScore: number;
+  type: string;
+}
+```
+
+- **表结构设计**:
+```sql
+-- 实体别名表
+CREATE TABLE entity_aliases (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  entity_id INTEGER NOT NULL,
+  alias TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (entity_id) REFERENCES entities(id) ON DELETE CASCADE,
+  UNIQUE(entity_id, alias)
+);
+
+-- 实体相似度表
+CREATE TABLE entity_similarity (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  entity_id1 INTEGER NOT NULL,
+  entity_id2 INTEGER NOT NULL,
+  similarity_score REAL NOT NULL,
+  calculation_method TEXT NOT NULL,
+  calculated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (entity_id1) REFERENCES entities(id) ON DELETE CASCADE,
+  FOREIGN KEY (entity_id2) REFERENCES entities(id) ON DELETE CASCADE,
+  UNIQUE(entity_id1, entity_id2)
+);
+```
 
 ### Requirement: 文档处理API
 系统 SHALL 提供完整的文档处理API，以支持文档的添加、更新、删除和批量处理操作。

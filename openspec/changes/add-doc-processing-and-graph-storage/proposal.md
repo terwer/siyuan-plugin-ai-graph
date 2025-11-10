@@ -6,8 +6,9 @@
 ## What Changes
 - 添加文档分词处理功能，支持中英文分词
 - 实现倒排索引存储，提高文本检索效率
-- 集成实体抽取功能，识别文档中的关键实体
-- 实现关系抽取功能，识别实体间的关联关系
+- 集成实体抽取功能，识别文档中的关键实体，并预留大模型接口
+- 实现关系抽取功能，识别实体间的关联关系，并预留大模型接口
+- 新增实体融合功能，支持相似实体识别和合并
 - 引入SQLite作为图数据存储引擎
 - 创建数据模型和存储接口
 - 实现数据同步和更新机制
@@ -28,11 +29,15 @@
 - 基于规则的实体识别
 - 支持自定义实体类型
 - 预留接口支持接入第三方NER模型
+- 预留大模型API接口，支持高级实体识别
+- 支持实体来源和置信度标记
 
 ### 关系抽取
 - 基于规则的关系识别
 - 支持自定义关系类型
 - 预留接口支持接入第三方关系抽取模型
+- 预留大模型API接口，支持高级关系识别
+- 支持关系证据文本记录
 
 ### 图数据存储
 - 选择SQLite作为存储引擎，理由：
@@ -41,6 +46,13 @@
   3. 支持事务，保证数据一致性
   4. 查询性能优秀，适合中小型数据集
   5. 跨平台支持良好
+
+### 实体融合
+- 支持基于字符串相似度的实体匹配
+- 支持基于语义相似度的实体匹配
+- 预留大模型语义相似度计算接口
+- 支持实体别名管理
+- 提供实体合并和关系更新机制
 
 ## 数据模型设计
 
@@ -64,6 +76,9 @@ CREATE TABLE entities (
   doc_id TEXT,
   start_pos INTEGER,
   end_pos INTEGER,
+  source TEXT DEFAULT 'rule', -- 实体来源
+  confidence REAL DEFAULT 1.0, -- 置信度
+  properties TEXT, -- JSON格式的额外属性
   FOREIGN KEY (doc_id) REFERENCES documents(doc_id)
 );
 
@@ -75,6 +90,9 @@ CREATE TABLE relationships (
   rel_type TEXT NOT NULL,
   doc_id TEXT,
   confidence REAL DEFAULT 1.0,
+  source TEXT DEFAULT 'rule', -- 关系来源
+  evidence_text TEXT, -- 支持该关系的文本证据
+  properties TEXT, -- JSON格式的额外属性
   FOREIGN KEY (source_entity_id) REFERENCES entities(entity_id),
   FOREIGN KEY (target_entity_id) REFERENCES entities(entity_id),
   FOREIGN KEY (doc_id) REFERENCES documents(doc_id)
@@ -96,11 +114,117 @@ CREATE TABLE index_entries (
   FOREIGN KEY (term_id) REFERENCES inverted_index(term_id),
   FOREIGN KEY (doc_id) REFERENCES documents(doc_id)
 );
+
+-- 实体别名表
+CREATE TABLE entity_aliases (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  entity_id INTEGER NOT NULL,
+  alias TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (entity_id) REFERENCES entities(entity_id) ON DELETE CASCADE,
+  UNIQUE(entity_id, alias)
+);
+
+-- 实体相似度表
+CREATE TABLE entity_similarity (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  entity_id1 INTEGER NOT NULL,
+  entity_id2 INTEGER NOT NULL,
+  similarity_score REAL NOT NULL,
+  calculation_method TEXT NOT NULL,
+  calculated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (entity_id1) REFERENCES entities(entity_id) ON DELETE CASCADE,
+  FOREIGN KEY (entity_id2) REFERENCES entities(entity_id) ON DELETE CASCADE,
+  UNIQUE(entity_id1, entity_id2)
+);
 ```
 
 ## 核心代码结构
 
-### 1. 文档处理器
+### 1. HTTP请求工具类
+
+```typescript
+/**
+ * HTTP请求工具类，使用fetch实现，支持过滤和配置
+ */
+class RequestUtil {
+  private defaultOptions: RequestInit;
+  private filters: Array<(url: string, options: RequestInit) => void> = [];
+
+  constructor(options: RequestInit = {}) {
+    this.defaultOptions = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    };
+  }
+
+  /**
+   * 添加请求过滤器，用于拦截和修改请求
+   */
+  addFilter(filter: (url: string, options: RequestInit) => void): void {
+    this.filters.push(filter);
+  }
+
+  /**
+   * 执行HTTP请求
+   */
+  async request<T = any>(url: string, options: RequestInit = {}): Promise<T> {
+    const mergedOptions = {
+      ...this.defaultOptions,
+      ...options,
+      headers: {
+        ...this.defaultOptions.headers,
+        ...options.headers,
+      },
+    };
+
+    // 应用所有过滤器
+    this.filters.forEach(filter => {
+      filter(url, mergedOptions);
+    });
+
+    try {
+      const response = await fetch(url, mergedOptions);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data as T;
+    } catch (error) {
+      console.error('Request failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * GET请求
+   */
+  async get<T = any>(url: string, options: RequestInit = {}): Promise<T> {
+    return this.request<T>(url, {
+      ...options,
+      method: 'GET',
+    });
+  }
+
+  /**
+   * POST请求
+   */
+  async post<T = any>(url: string, data: any, options: RequestInit = {}): Promise<T> {
+    return this.request<T>(url, {
+      ...options,
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+}
+```
+
+### 2. 文档处理器
 
 ```typescript
 /**
@@ -110,12 +234,14 @@ class DocumentProcessor {
   private tokenizer: Tokenizer;
   private entityExtractor: EntityExtractor;
   private relationExtractor: RelationExtractor;
+  private entityFusionService: EntityFusionService;
   private dbManager: DatabaseManager;
 
   constructor(dbPath: string) {
     this.tokenizer = new Tokenizer();
     this.entityExtractor = new EntityExtractor();
     this.relationExtractor = new RelationExtractor();
+    this.entityFusionService = new EntityFusionService();
     this.dbManager = new DatabaseManager(dbPath);
   }
 
@@ -134,11 +260,41 @@ class DocumentProcessor {
     
     // 实体抽取
     const entities = await this.entityExtractor.extract(doc.content, doc.docId);
-    await this.dbManager.saveEntities(entities);
+    
+    // 实体融合处理
+    const fusedEntities = await this.entityFusionService.fuseEntities(entities);
+    
+    // 保存实体
+    await this.dbManager.saveEntities(fusedEntities);
     
     // 关系抽取
-    const relationships = await this.relationExtractor.extract(entities, doc.content, doc.docId);
+    const relationships = await this.relationExtractor.extract(fusedEntities, doc.content, doc.docId);
     await this.dbManager.saveRelationships(relationships);
+  }
+  
+  /**
+   * 配置大模型参数
+   */
+  configureLLM(options: LLMConfig): void {
+    // 创建RequestUtil实例
+    const requestUtil = new RequestUtil({
+      headers: {
+        'Authorization': options.apiKey ? `Bearer ${options.apiKey}` : '',
+        ...options.headers,
+      }
+    });
+    
+    // 添加请求过滤器（支持底层过滤）
+    if (options.filters && options.filters.length > 0) {
+      options.filters.forEach(filter => {
+        requestUtil.addFilter(filter);
+      });
+    }
+    
+    // 配置各组件使用RequestUtil
+    this.entityExtractor.configureLLM(options, requestUtil);
+    this.relationExtractor.configureLLM(options, requestUtil);
+    this.entityFusionService.configureLLM(options, requestUtil);
   }
 }
 ```
@@ -234,4 +390,5 @@ class DatabaseManager {
 - Affected specs: 数据处理、存储层实现
 - Affected code: 主要涉及新增文档处理模块、存储模块和相关API
 - 需要添加的依赖：better-sqlite3、nodejieba等
+- 实现自定义RequestUtil工具类，使用fetch API，支持底层请求过滤
 - 对现有代码的影响较小，主要是新增功能模块
