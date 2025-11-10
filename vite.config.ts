@@ -98,7 +98,7 @@ export default defineConfig({
 
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ["siyuan", "process"],
+      external: ["siyuan", "process", "better-sqlite3", "nodejieba"],
 
       output: {
         entryFileNames: "[name].js",

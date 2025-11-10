@@ -121,15 +121,12 @@ export class Tokenizer {
             currentPos = start + word.length;
           }
         });
+        return tokens;
       } catch (error) {
         console.error('Error using nodejieba for tokenization:', error);
         // 出错时使用备用方法
         return this.fallbackTokenize(text);
       }
-    } else {
-      // 使用备用分词方法
-      return this.fallbackTokenize(text);
-    }
     } else {
       // 使用正则表达式进行英文分词（同时处理混合文本）
       // 匹配中英文单词、数字、中文标点和英文标点
@@ -150,6 +147,7 @@ export class Tokenizer {
           tokens.push(token);
         }
       }
+      return tokens;
     }
     
     return tokens;
