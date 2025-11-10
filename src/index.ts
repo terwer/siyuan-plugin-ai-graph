@@ -24,13 +24,13 @@
  */
 
 import { App, IObject, Plugin } from "siyuan"
-import { simpleLogger } from "zhi-lib-base"
+import { ILogger, simpleLogger } from "zhi-lib-base"
 
 import "../index.styl"
 import { isDev } from "./Constants"
 
-export default class ImporterPlugin extends Plugin {
-  private logger
+export default class AiGraphPlugin extends Plugin {
+  private logger: ILogger
 
   constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
     super(options)
