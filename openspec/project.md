@@ -6,6 +6,7 @@
 ## Tech Stack
 - TypeScript - Primary development language
 - Vue.js - UI component framework
+- Stylus - CSS preprocessor
 - g6 - Graph visualization library
 - Node.js - Backend server environment
 - MongoDB/轻量级回退方案如 SQLite、H2等，默认优先选择轻量级 - Database for storing article data and knowledge graph
@@ -21,7 +22,13 @@
 - 使用最新版本的 Vue.js、g6、Node.js 等相关库
 
 ### Architecture Patterns
-- 采用 zhi-cli init 初始化项目，严格遵守思源笔记插件规范，目录结构如下：
+- 采用 `zhi-cli init` 初始化项目，严格遵守思源笔记插件规范，目录结构如下：
+  - .github/ - GitHub 配置目录
+    - workflows/ - GitHub Actions 工作流配置
+    - ISSUE_TEMPLATE.md - 问题模板配置
+    - PULL_REQUEST_TEMPLATE.md - 拉取请求模板配置
+  - .gitignore - Git 忽略文件配置
+  - scripts/ - 项目脚本目录
   - src/
     - components/ - Vue.js 组件
     - i18n/ - 国际化配置
@@ -30,24 +37,59 @@
     - App.vue - 主应用组件
     - main.ts - 应用入口文件
     - index.ts - 插件入口文件
+  - index.styl - 插件样式文件
   - public/ - 静态资源目录
   - plugin.json - 插件配置文件
   - icon.png - 插件图标
-  - package.json - 项目依赖配置文件
+  - package.json - 项目依赖配置文件，包含项目依赖和脚本命令
   - vite.config.ts - Vite 配置文件
+  - README.md - 项目说明文档
+  - README_zh_CN.md - 项目说明文档（中文）
+  - DEVELOPMENT.md - 开发指南文档
 - 采用 g6 可视化展示知识图谱
 
 ### Testing Strategy
-[Explain your testing approach and requirements]
+- 单元测试：使用 Vitest 框架测试核心功能模块，如语义分词、倒排索引生成等
+- 组件测试：使用 Vue Test Utils 测试 Vue 组件的渲染和交互
+- 集成测试：测试插件与思源笔记核心功能的交互
+- 端到端测试：使用 Cypress 测试完整的用户流程
+- 测试覆盖率目标：核心业务逻辑达到 80% 以上
+- 持续集成：通过 GitHub Actions 自动运行测试套件
 
 ### Git Workflow
-[Describe your branching strategy and commit conventions]
+- main 分支：保持稳定可发布的代码
+- develop 分支：开发的主要分支，包含最新功能
+- feature 分支：新功能开发（格式：feature/功能名称）
+- bugfix 分支：修复问题（格式：bugfix/问题描述）
+- hotfix 分支：紧急修复生产环境问题（格式：hotfix/问题描述）
+- 提交规范：遵循 Conventional Commits 规范（feat:, fix:, docs:, style:, refactor:, test:, chore:）
+- 代码审查：合并前必须经过至少一位团队成员的代码审查
 
 ## Domain Context
-[Add domain-specific knowledge that AI assistants need to understand]
+- 思源笔记是一个本地优先的知识管理系统，采用块级别的内容模型
+- 非结构化文章是指没有固定格式或模式的文本内容
+- 语义分词是将文本切分为有意义的词语或短语的过程
+- 倒排索引是一种反向索引，用于快速查找包含特定词语的文档
+- 知识图谱是一种表示实体之间关系的结构化图数据模型
+- 语义检索是基于文本的实际含义而非关键词匹配的检索方式
 
 ## Important Constraints
-[List any technical, business, or regulatory constraints]
+- 必须严格遵守思源笔记插件API和安全要求
+- 保护用户隐私，本地处理敏感数据，避免不必要的数据上传
+- 性能优化：处理大量笔记数据时保持响应速度
+- 内存使用限制：插件运行不应显著增加思源笔记的内存占用
+- 保持与思源笔记核心功能的兼容性
+- 遵循思源笔记的UI/UX设计风格，保持一致的用户体验
+- 支持离线工作环境，不依赖于持续的网络连接
 
 ## External Dependencies
-[Document key external services, APIs, or systems]
+- 思源笔记插件API：用于访问和操作思源笔记数据
+- Vue.js：用于构建响应式UI组件
+- g6：用于知识图谱可视化和交互
+- TypeScript：提供类型安全和开发体验
+- Node.js：运行时环境
+- SQLite/H2：轻量级本地数据库，用于存储索引和图谱数据
+- jieba分词/THULAC：中文语义分词库
+- Vite：快速开发和构建工具
+- Vitest：JavaScript测试框架
+- Vue Test Utils：Vue组件测试工具
