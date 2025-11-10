@@ -58,7 +58,7 @@ class Topbar {
 
     // 创建对话框
     const d = new Dialog({
-      title: `${this.pluginInstance.i18n.aiGraph} - v${pkg.version}`,
+      // title: `${this.pluginInstance.i18n.aiGraph} - v${pkg.version}`,
       content: `<div id="${containerId}"></div>`,
       width: this.pluginInstance.isMobile ? "92vw" : "61.8vw",
     })
