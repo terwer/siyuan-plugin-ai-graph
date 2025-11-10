@@ -13,6 +13,7 @@
 - g6 - 知识图谱可视化库
 - Vitest - 测试框架
 - MongoDB/轻量级回退方案如 SQLite、H2等，默认优先选择轻量级 - 索引和图数据存储
+- **[重要：必须使用 pnpm 而非 npm 作为包管理工具]**
 
 ## Project Conventions
 
@@ -36,6 +37,7 @@
     - utils/ - 工具函数
     - Constants.ts - 常量定义
     - index.ts - 插件入口文件
+  - **tests/ - 测试目录（重要：tests 是唯一的测试文件目录，请勿使用其他测试目录名称）**
   - index.styl - 插件样式文件
   - plugin.json - 插件配置文件
   - icon.png - 插件图标
@@ -48,6 +50,7 @@
 ### Testing Strategy
 - 单元测试：使用 Vitest 框架测试核心功能模块
 - 持续集成：通过 GitHub Actions 自动运行测试套件和构建流程
+- **[重要：所有测试文件必须放在 tests/ 目录下，这是项目中唯一的测试目录]**
 
 ### Git Workflow
 - main 分支：保持稳定可发布的代码
