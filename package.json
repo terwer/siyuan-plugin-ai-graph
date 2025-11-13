@@ -27,7 +27,7 @@
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
     "fast-glob": "^3.3.3",
-    "jsdom": "^27.1.0",
+    "jsdom": "^27.2.0",
     "minimist": "^1.2.8",
     "rollup-plugin-livereload": "^2.0.5",
     "siyuan": "^1.1.5",
