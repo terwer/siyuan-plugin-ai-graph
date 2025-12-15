@@ -44,12 +44,19 @@ export class DocumentProcessor {
       const tokens = await this.tokenizeDocument(doc.content, doc.docId)
 
       // 3. 实体提取
-      const entities = await this.extractEntities(doc.content, doc.docId)
+      let entities = await this.extractEntities(doc.content, doc.docId)
 
-      // 4. 关系提取
+      // 4. 存储实体并重新加载（获取ID）
+      if (entities.length > 0) {
+        await this.dbManager.saveEntities(entities)
+        // 重新加载实体以获取数据库分配的ID
+        entities = await this.dbManager.getEntities(doc.docId)
+      }
+
+      // 5. 关系提取
       const relationships = await this.extractRelationships(entities, doc.content, doc.docId)
 
-      // 5. 实体融合 - 简化为不执行融合，直接返回实体
+      // 6. 实体融合 - 简化为不执行融合，直接返回实体
       return {
         tokens,
         entities,
@@ -81,11 +88,6 @@ export class DocumentProcessor {
     try {
       // 提取实体
       const entities = await this.entityExtractor.extract(content, docId)
-
-      // 存储实体
-      if (entities.length > 0) {
-        await this.dbManager.saveEntities(entities)
-      }
 
       return entities
     } catch (error) {

@@ -243,8 +243,8 @@ export class RelationExtractor {
       const parsedRelationships = JSON.parse(content)
 
       relationships = parsedRelationships.map((rel: any) => ({
-        sourceEntityId: rel.sourceEntityId,
-        targetEntityId: rel.targetEntityId,
+        sourceEntityId: parseInt(rel.sourceEntityId, 10),
+        targetEntityId: parseInt(rel.targetEntityId, 10),
         type: rel.type,
         docId: docId,
         confidence: 0.9, // 大模型提取的置信度
