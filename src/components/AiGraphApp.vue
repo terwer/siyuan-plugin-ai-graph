@@ -309,17 +309,8 @@ const renderGraph = async () => {
         style: {
           stroke: '#91d5ff',   // 使用 Ant Design 的蓝色系
           lineWidth: 2,
-          // 添加阴影效果
-          shadowColor: 'rgba(0, 0, 0, 0.08)',
-          shadowBlur: 4,
-          shadowOffsetX: 1,
-          shadowOffsetY: 1,
-        },
-        markerEnd: {
-          path: 'M 0,0 L 12,6 L 12,-6 Z',
-          fill: '#1890ff',
-          stroke: '#1890ff',
-          lineWidth: 1,
+          // 使用内置箭头类型
+          endArrow: true,
         },
         labelCfg: {
           autoRotate: true,
@@ -527,25 +518,14 @@ const transformDataToG6Format = (data) => {
           edge.style = {
             stroke: '#ff4d4f',  // Ant Design 红色系 - 用于共现关系
             lineWidth: 2,
-            shadowColor: 'rgba(0, 0, 0, 0.08)',
-            shadowBlur: 4,
-            shadowOffsetX: 1,
-            shadowOffsetY: 1,
-          };
-          edge.markerEnd = {
-            path: 'M 0,0 L 12,6 L 12,-6 Z',
-            fill: '#ff4d4f',
-            stroke: '#ff4d4f',
-            lineWidth: 1,
+            // 使用内置箭头类型
+            endArrow: true,
           };
           // 添加悬停样式
           edge.stateStyles = {
             hover: {
               stroke: '#ff7875',
               lineWidth: 3,
-              shadowBlur: 6,
-              shadowOffsetX: 2,
-              shadowOffsetY: 2,
             }
           };
           // 为平行边设置偏移量
@@ -556,25 +536,14 @@ const transformDataToG6Format = (data) => {
           edge.style = {
             stroke: '#52c41a',  // Ant Design 绿色系 - 用于关联关系
             lineWidth: 2,
-            shadowColor: 'rgba(0, 0, 0, 0.08)',
-            shadowBlur: 4,
-            shadowOffsetX: 1,
-            shadowOffsetY: 1,
-          };
-          edge.markerEnd = {
-            path: 'M 0,0 L 12,6 L 12,-6 Z',
-            fill: '#52c41a',
-            stroke: '#52c41a',
-            lineWidth: 1,
+            // 使用内置箭头类型
+            endArrow: true,
           };
           // 添加悬停样式
           edge.stateStyles = {
             hover: {
               stroke: '#73d13d',
               lineWidth: 3,
-              shadowBlur: 6,
-              shadowOffsetX: 2,
-              shadowOffsetY: 2,
             }
           };
           // 为平行边设置偏移量
@@ -585,25 +554,14 @@ const transformDataToG6Format = (data) => {
           edge.style = {
             stroke: '#722ed1',  // Ant Design 紫色系 - 用于归属关系
             lineWidth: 2,
-            shadowColor: 'rgba(0, 0, 0, 0.08)',
-            shadowBlur: 4,
-            shadowOffsetX: 1,
-            shadowOffsetY: 1,
-          };
-          edge.markerEnd = {
-            path: 'M 0,0 L 12,6 L 12,-6 Z',
-            fill: '#722ed1',
-            stroke: '#722ed1',
-            lineWidth: 1,
+            // 使用内置箭头类型
+            endArrow: true,
           };
           // 添加悬停样式
           edge.stateStyles = {
             hover: {
               stroke: '#9254de',
               lineWidth: 3,
-              shadowBlur: 6,
-              shadowOffsetX: 2,
-              shadowOffsetY: 2,
             }
           };
           // 为平行边设置偏移量
@@ -614,25 +572,14 @@ const transformDataToG6Format = (data) => {
           edge.style = {
             stroke: '#91d5ff',  // Ant Design 蓝色系 - 默认
             lineWidth: 2,
-            shadowColor: 'rgba(0, 0, 0, 0.08)',
-            shadowBlur: 4,
-            shadowOffsetX: 1,
-            shadowOffsetY: 1,
-          };
-          edge.markerEnd = {
-            path: 'M 0,0 L 12,6 L 12,-6 Z',
-            fill: '#1890ff',
-            stroke: '#1890ff',
-            lineWidth: 1,
+            // 使用内置箭头类型
+            endArrow: true,
           };
           // 添加悬停样式
           edge.stateStyles = {
             hover: {
               stroke: '#40a9ff',
               lineWidth: 3,
-              shadowBlur: 6,
-              shadowOffsetX: 2,
-              shadowOffsetY: 2,
             }
           };
           // 为平行边设置偏移量
@@ -640,35 +587,13 @@ const transformDataToG6Format = (data) => {
           edge.curveOffset = 40;
       }
       
-      // 特殊处理自环边
+      // 特殊处理自环边，确保箭头正确显示
       if (sourceId === targetId) {
         edge.type = 'loop';
-        // 根据类型设置不同的自环边位置
-        switch (relationship.type) {
-          case 'cooccur':
-            edge.loopCfg = {
-              position: 'top',
-              dist: 60,
-            };
-            break;
-          case 'associate':
-            edge.loopCfg = {
-              position: 'right',
-              dist: 60,
-            };
-            break;
-          case 'belong_to':
-            edge.loopCfg = {
-              position: 'bottom',
-              dist: 60,
-            };
-            break;
-          default:
-            edge.loopCfg = {
-              position: 'left',
-              dist: 60,
-            };
-        }
+        edge.loopCfg = {
+          position: 'top',
+          dist: 60,
+        };
       }
       
       // 然后添加其他属性，但要确保不覆盖已设置的属性
