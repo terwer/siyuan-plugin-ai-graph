@@ -1,8 +1,7 @@
 import { createApp } from "vue"
 import AiGraphApp from "./components/AiGraphApp.vue"
-import { Dialog } from "siyuan"
+import { Dialog, showMessage } from "siyuan"
 import { icons } from "./utils/svg"
-import pkg from "../package.json"
 
 /**
  * 顶栏管理类
@@ -53,7 +52,20 @@ class Topbar {
    * 处理顶栏按钮点击事件
    * @param event 鼠标事件
    */
-  private handleTopbarClick(event: MouseEvent) {
+  private async handleTopbarClick(event: MouseEvent) {
+    event.preventDefault()
+    const win = window as any
+    const zhi = win.zhi || {}
+    const v = await zhi.npm.nodeVersion()
+    if (v && v.startsWith("v")) {
+      this.pluginInstance.logger.info(`node is ready, version: ${v}`, 300, "info")
+      // await zhi.npm.checkAndInitNode("22.21.1")
+    } else {
+      showMessage("node is init, please wait...", 3000, "info")
+      // await zhi.npm.checkAndInitNode("22.21.1")
+      showMessage(`node is ready`, 3000, "info")
+    }
+
     const containerId = "ai-graph-dialog"
 
     // 创建对话框

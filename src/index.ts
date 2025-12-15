@@ -26,9 +26,10 @@
 import { App, IObject, Plugin } from "siyuan"
 import { ILogger, simpleLogger } from "zhi-lib-base"
 import { Topbar } from "./topbar"
+import { dataDir, isDev } from "./Constants"
+import pkg from "../package.json"
 
 import "../index.styl"
-import { isDev } from "./Constants"
 
 export default class AiGraphPlugin extends Plugin {
   private logger: ILogger
@@ -48,12 +49,34 @@ export default class AiGraphPlugin extends Plugin {
       // 初始化顶栏
       await this.topbar.initTopbar()
       this.logger.info("顶栏初始化完成")
+      // 初始化 Zhi Infra
+      await this.initZhiInfra()
     } catch (error) {
-      this.logger.error("顶栏初始化失败:", error)
+      this.logger.error("智能图谱插件初始化失败:", error)
     }
   }
 
   onunload() {
     this.logger.info("智能图谱插件已卸载")
+  }
+
+  //================================================================
+  // private function
+  //================================================================
+
+  public async initZhiInfra() {
+    this.logger.info("开始初始化 Zhi Infra...")
+    try {
+      const pluginDir = `${dataDir}/plugins/${pkg.name}`
+      const win = window as any
+      const zhiInfraActivator = win.require(`${pluginDir}/libs/zhi-infra/index.cjs`).default
+      const zhiNpmPath = `${pluginDir}/libs/deps/npm`
+      await zhiInfraActivator(zhiNpmPath, true)
+      const zhi = win.zhi
+      zhi.npm.depsJsonPath = `${pluginDir}`
+      this.logger.info("Zhi Infra 初始化完成")
+    } catch (e) {
+      this.logger.error("Zhi Infra 初始化出错", e)
+    }
   }
 }
