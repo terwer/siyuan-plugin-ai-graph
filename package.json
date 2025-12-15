@@ -42,6 +42,7 @@
     "vitest": "^4.0.8"
   },
   "dependencies": {
+    "@antv/g6": "4.8.24",
     "@types/better-sqlite3": "^7.6.10",
     "better-sqlite3": "^9.6.0",
     "nodejieba": "^2.6.0",
