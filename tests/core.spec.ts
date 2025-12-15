@@ -23,6 +23,7 @@ describe("AI Graph Core Tests", () => {
 
     // 初始化分词器
     tokenizer = new Tokenizer()
+    tokenizer.configureLLM(llmConfig)
 
     // 初始化实体提取器
     entityExtractor = new EntityExtractor()

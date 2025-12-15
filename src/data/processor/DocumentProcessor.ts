@@ -24,6 +24,7 @@ export class DocumentProcessor {
    * 配置大模型参数
    */
   configureLLM(config: LLMConfig): void {
+    this.tokenizer.configureLLM(config)
     this.entityExtractor.configureLLM(config)
     this.relationExtractor.configureLLM(config)
   }

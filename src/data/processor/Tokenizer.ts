@@ -1,4 +1,5 @@
-import type { Token } from "../types"
+import type { Token, LLMConfig } from "../types"
+import { RequestUtil } from "../utils/RequestUtil"
 
 /**
  * 分词器类，支持中英文分词和停用词过滤
@@ -9,6 +10,8 @@ export class Tokenizer {
   private customDict: Map<string, string>
   private initialized: boolean
   private initPromise: Promise<void> | null
+  private llmConfig?: LLMConfig
+  private requestUtil?: RequestUtil
 
   constructor() {
     // 懒加载nodejieba，只在需要时导入
@@ -47,6 +50,32 @@ export class Tokenizer {
       "啊",
       "呢",
     ])
+  }
+
+  /**
+   * 配置大模型参数
+   */
+  configureLLM(config: LLMConfig, requestUtil?: RequestUtil): void {
+    this.llmConfig = config
+
+    // 如果没有提供RequestUtil，则创建一个新的
+    if (requestUtil) {
+      this.requestUtil = requestUtil
+    } else if (config) {
+      this.requestUtil = new RequestUtil({
+        headers: {
+          Authorization: config.apiKey ? `Bearer ${config.apiKey}` : "",
+          ...config.headers,
+        },
+      })
+
+      // 添加请求过滤器
+      if (config.filters && config.filters.length > 0) {
+        config.filters.forEach((filter) => {
+          this.requestUtil!.addFilter(filter)
+        })
+      }
+    }
   }
 
   private async init() {
@@ -121,6 +150,16 @@ export class Tokenizer {
     // 确保初始化完成
     await this.init()
 
+    // 如果配置了大模型，使用大模型分词
+    if (this.llmConfig && this.requestUtil) {
+      try {
+        const llmTokens = await this.tokenizeByLLM(text)
+        return llmTokens
+      } catch (error) {
+        console.warn("LLM tokenization failed, falling back to traditional method:", error)
+      }
+    }
+
     const tokens: Token[] = []
 
     // 先检查文本中是否包含中文字符
@@ -180,6 +219,56 @@ export class Tokenizer {
     }
 
     return tokens
+  }
+
+  /**
+   * 基于大模型的分词方法
+   */
+  private async tokenizeByLLM(text: string): Promise<Token[]> {
+    if (!this.llmConfig || !this.requestUtil || !this.llmConfig.endpoint) {
+      return []
+    }
+
+    // 构建提示词
+    const prompt =
+      this.llmConfig.promptTemplate ||
+      `
+      请对以下文本进行分词处理，并按照指定格式输出：
+
+      文本：${text}
+
+      输出格式：JSON数组，每个对象包含text(分词文本)、start(起始位置)、end(结束位置)
+    `
+
+    // 调用大模型API
+    const response = await this.requestUtil.post(this.llmConfig.endpoint, {
+      model: this.llmConfig.model || "gpt-3.5-turbo",
+      temperature: this.llmConfig.temperature || 0.0,
+      messages: [
+        { role: "system", content: "你是一个分词助手，只返回JSON格式的分词结果。" },
+        { role: "user", content: prompt },
+      ],
+    })
+
+    // 解析响应
+    let llmTokens: Token[] = []
+    try {
+      // 假设大模型返回的格式是标准的
+      const content = response.choices?.[0]?.message?.content || ""
+      const parsedTokens = JSON.parse(content)
+
+      llmTokens = parsedTokens.map((token: any) => ({
+        text: token.text,
+        start: token.start,
+        end: token.end,
+        type: this.determineTokenType(token.text),
+        source: "llm",
+      }))
+    } catch (error) {
+      console.error("Failed to parse LLM response:", error)
+    }
+
+    return llmTokens
   }
 
   /**
