@@ -277,30 +277,30 @@ const renderGraph = async () => {
       layout: {
         type: 'dagre',   // 使用 dagre 布局算法
         rankdir: 'LR',   // 改为从左到右的布局方向（水平布局）
-        nodesep: 80,     // 增加节点间水平间距
-        ranksep: 90,     // 增加节点间垂直间距
+        nodesep: 60,     // 调整节点间水平间距
+        ranksep: 70,     // 调整节点间垂直间距
       },
       defaultNode: {
         type: 'circle',
-        size: 70,        // 增大节点尺寸
+        size: 60,        // 调整节点尺寸为更合适的大小
         style: {
           // 使用 Ant Design 的主色调
           fill: '#1890ff',
           stroke: '#40a9ff',
-          lineWidth: 2,
-          // 添加阴影效果
-          shadowColor: 'rgba(0, 0, 0, 0.15)',
-          shadowBlur: 6,
-          shadowOffsetX: 2,
-          shadowOffsetY: 2,
+          lineWidth: 1,    // 降低描边宽度
+          // 添加阴影效果，但降低强度以提高清晰度
+          shadowColor: 'rgba(0, 0, 0, 0.08)',
+          shadowBlur: 4,
+          shadowOffsetX: 1,
+          shadowOffsetY: 1,
         },
         labelCfg: {
           position: 'bottom',
           style: {
             fill: 'rgba(0, 0, 0, 0.85)',
-            fontSize: 16,
+            fontSize: 14,   // 调整字体大小
             fontFamily: 'Chinese Quote, -apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Helvetica, Arial, sans-serif',
-            fontWeight: 500,
+            fontWeight: 400, // 使用正常的字体粗细
           },
         },
       },
@@ -308,7 +308,7 @@ const renderGraph = async () => {
         type: 'quadratic',  // 使用二次贝塞尔曲线使连接线更流畅
         style: {
           stroke: '#91d5ff',   // 使用 Ant Design 的蓝色系
-          lineWidth: 2,
+          lineWidth: 1.5,      // 降低线条宽度到 1.5px
           // 使用内置箭头类型
           endArrow: true,
         },
@@ -316,13 +316,13 @@ const renderGraph = async () => {
           autoRotate: true,
           style: {
             fontFamily: 'Chinese Quote, -apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Helvetica, Arial, sans-serif',
-            fontSize: 14,
+            fontSize: 12,      // 调整字体大小
             fill: 'rgba(0, 0, 0, 0.65)',
             background: {
               fill: '#ffffff',
               stroke: '#d9d9d9',
-              padding: [4, 6, 4, 6],
-              radius: 4,
+              padding: [2, 4, 2, 4],  // 减小内边距
+              radius: 2,         // 减小圆角
             },
           },
         },
@@ -331,21 +331,21 @@ const renderGraph = async () => {
         hover: {
           fill: '#40a9ff',
           stroke: '#1890ff',
-          lineWidth: 3,
-          // 悬停时增强阴影效果
-          shadowBlur: 10,
-          shadowOffsetX: 3,
-          shadowOffsetY: 3,
-        },
-      },
-      edgeStateStyles: {
-        hover: {
-          lineWidth: 3,
-          stroke: '#1890ff',
+          lineWidth: 2,
           // 悬停时增强阴影效果
           shadowBlur: 6,
           shadowOffsetX: 2,
           shadowOffsetY: 2,
+        },
+      },
+      edgeStateStyles: {
+        hover: {
+          lineWidth: 2,
+          stroke: '#1890ff',
+          // 悬停时增强阴影效果
+          shadowBlur: 4,
+          shadowOffsetX: 1,
+          shadowOffsetY: 1,
         },
       },
       modes: {
@@ -416,33 +416,33 @@ const transformDataToG6Format = (data) => {
             node.style = {
               fill: '#ff4d4f',  // Ant Design 红色系 - 用于人名
               stroke: '#ff7875',
-              lineWidth: 2,
-              shadowColor: 'rgba(0, 0, 0, 0.15)',
-              shadowBlur: 6,
-              shadowOffsetX: 2,
-              shadowOffsetY: 2,
+              lineWidth: 1,
+              shadowColor: 'rgba(0, 0, 0, 0.08)',
+              shadowBlur: 4,
+              shadowOffsetX: 1,
+              shadowOffsetY: 1,
             };
             break;
           case '组织名':
             node.style = {
               fill: '#52c41a',  // Ant Design 绿色系 - 用于组织名
               stroke: '#73d13d',
-              lineWidth: 2,
-              shadowColor: 'rgba(0, 0, 0, 0.15)',
-              shadowBlur: 6,
-              shadowOffsetX: 2,
-              shadowOffsetY: 2,
+              lineWidth: 1,
+              shadowColor: 'rgba(0, 0, 0, 0.08)',
+              shadowBlur: 4,
+              shadowOffsetX: 1,
+              shadowOffsetY: 1,
             };
             break;
           default:
             node.style = {
               fill: '#1890ff',  // Ant Design 蓝色系 - 默认
               stroke: '#40a9ff',
-              lineWidth: 2,
-              shadowColor: 'rgba(0, 0, 0, 0.15)',
-              shadowBlur: 6,
-              shadowOffsetX: 2,
-              shadowOffsetY: 2,
+              lineWidth: 1,
+              shadowColor: 'rgba(0, 0, 0, 0.08)',
+              shadowBlur: 4,
+              shadowOffsetX: 1,
+              shadowOffsetY: 1,
             };
         }
         
@@ -517,7 +517,7 @@ const transformDataToG6Format = (data) => {
         case 'cooccur':
           edge.style = {
             stroke: '#ff4d4f',  // Ant Design 红色系 - 用于共现关系
-            lineWidth: 2,
+            lineWidth: 1.5,     // 降低线条宽度
             // 使用内置箭头类型
             endArrow: true,
           };
@@ -525,7 +525,7 @@ const transformDataToG6Format = (data) => {
           edge.stateStyles = {
             hover: {
               stroke: '#ff7875',
-              lineWidth: 3,
+              lineWidth: 2,
             }
           };
           // 为平行边设置偏移量
@@ -535,7 +535,7 @@ const transformDataToG6Format = (data) => {
         case 'associate':
           edge.style = {
             stroke: '#52c41a',  // Ant Design 绿色系 - 用于关联关系
-            lineWidth: 2,
+            lineWidth: 1.5,     // 降低线条宽度
             // 使用内置箭头类型
             endArrow: true,
           };
@@ -543,7 +543,7 @@ const transformDataToG6Format = (data) => {
           edge.stateStyles = {
             hover: {
               stroke: '#73d13d',
-              lineWidth: 3,
+              lineWidth: 2,
             }
           };
           // 为平行边设置偏移量
@@ -553,7 +553,7 @@ const transformDataToG6Format = (data) => {
         case 'belong_to':
           edge.style = {
             stroke: '#722ed1',  // Ant Design 紫色系 - 用于归属关系
-            lineWidth: 2,
+            lineWidth: 1.5,     // 降低线条宽度
             // 使用内置箭头类型
             endArrow: true,
           };
@@ -561,7 +561,7 @@ const transformDataToG6Format = (data) => {
           edge.stateStyles = {
             hover: {
               stroke: '#9254de',
-              lineWidth: 3,
+              lineWidth: 2,
             }
           };
           // 为平行边设置偏移量
@@ -571,7 +571,7 @@ const transformDataToG6Format = (data) => {
         default:
           edge.style = {
             stroke: '#91d5ff',  // Ant Design 蓝色系 - 默认
-            lineWidth: 2,
+            lineWidth: 1.5,     // 降低线条宽度
             // 使用内置箭头类型
             endArrow: true,
           };
@@ -579,7 +579,7 @@ const transformDataToG6Format = (data) => {
           edge.stateStyles = {
             hover: {
               stroke: '#40a9ff',
-              lineWidth: 3,
+              lineWidth: 2,
             }
           };
           // 为平行边设置偏移量
