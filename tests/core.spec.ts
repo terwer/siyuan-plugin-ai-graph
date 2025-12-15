@@ -2,6 +2,16 @@ import { DatabaseManager, Document, DocumentProcessor, EntityExtractor, LLMConfi
 
 import { afterAll, beforeAll, describe, it, expect } from "vitest"
 
+const llmConfig: LLMConfig = {
+  endpoint: "http://localhost:8000/v1/chat/completions",
+  model: "deepseek-r1",
+  apiKey: "",
+  temperature: 0.0,
+  headers: {
+    "Content-Type": "application/json",
+  },
+}
+
 describe("AI Graph Core Tests", () => {
   let dbManager: DatabaseManager
   let tokenizer: Tokenizer
@@ -16,16 +26,8 @@ describe("AI Graph Core Tests", () => {
 
     // 初始化实体提取器
     entityExtractor = new EntityExtractor()
-    const llmConfig: LLMConfig = {
-      endpoint: "http://localhost:8000/v1/chat/completions",
-      model: "deepseek-r1",
-      apiKey: "",
-      temperature: 0.0,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-    entityExtractor.configureLLM(llmConfig)
+    // 不配置LLM，使用规则提取
+    // entityExtractor.configureLLM(llmConfig)
   })
 
   afterAll(async () => {
@@ -100,6 +102,7 @@ describe("AI Graph Core Tests", () => {
   describe("Document Processor Tests", () => {
     it("should process document completely", async () => {
       const documentProcessor = new DocumentProcessor(dbManager)
+      documentProcessor.configureLLM(llmConfig)
 
       const testDoc: Document = {
         docId: "test_doc_id_2",
@@ -118,6 +121,6 @@ describe("AI Graph Core Tests", () => {
       expect(result).toHaveProperty("tokens")
       expect(result).toHaveProperty("entities")
       expect(result).toHaveProperty("relationships")
-    })
+    }, 60000)
   })
 })

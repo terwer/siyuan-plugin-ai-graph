@@ -12,7 +12,6 @@ export class DocumentProcessor {
   private entityExtractor: EntityExtractor
   private relationExtractor: RelationExtractor
   private dbManager: DatabaseManager
-  private llmConfig?: LLMConfig
 
   constructor(dbManager: DatabaseManager) {
     this.tokenizer = new Tokenizer()
@@ -25,7 +24,6 @@ export class DocumentProcessor {
    * 配置大模型参数
    */
   configureLLM(config: LLMConfig): void {
-    this.llmConfig = config
     this.entityExtractor.configureLLM(config)
     this.relationExtractor.configureLLM(config)
   }
@@ -68,7 +66,7 @@ export class DocumentProcessor {
    */
   private async tokenizeDocument(content: string, docId: string): Promise<Token[]> {
     // 分词
-    const tokens = this.tokenizer.tokenize(content)
+    const tokens = await this.tokenizer.tokenize(content)
 
     // 创建倒排索引
     await this.dbManager.buildInvertedIndex(docId, tokens)

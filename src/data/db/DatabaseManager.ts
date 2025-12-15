@@ -63,7 +63,8 @@ export class DatabaseManager {
         source TEXT DEFAULT 'rule',
         confidence REAL DEFAULT 1.0,
         properties TEXT,
-        FOREIGN KEY (doc_id) REFERENCES documents(doc_id) ON DELETE CASCADE
+        FOREIGN KEY (doc_id) REFERENCES documents(doc_id) ON DELETE CASCADE,
+        UNIQUE(entity_name, doc_id, start_pos, end_pos)
       );
       
       -- 创建关系表
