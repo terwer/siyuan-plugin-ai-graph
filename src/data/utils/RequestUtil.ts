@@ -2,24 +2,24 @@
  * HTTP请求工具类，使用fetch实现，支持过滤和配置
  */
 export class RequestUtil {
-  private defaultOptions: RequestInit;
-  private filters: Array<(url: string, options: RequestInit) => void> = [];
+  private defaultOptions: RequestInit
+  private filters: Array<(url: string, options: RequestInit) => void> = []
 
   constructor(options: RequestInit = {}) {
     this.defaultOptions = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...options.headers,
       },
       ...options,
-    };
+    }
   }
 
   /**
    * 添加请求过滤器，用于拦截和修改请求
    */
   addFilter(filter: (url: string, options: RequestInit) => void): void {
-    this.filters.push(filter);
+    this.filters.push(filter)
   }
 
   /**
@@ -33,25 +33,25 @@ export class RequestUtil {
         ...this.defaultOptions.headers,
         ...options.headers,
       },
-    };
+    }
 
     // 应用所有过滤器
-    this.filters.forEach(filter => {
-      filter(url, mergedOptions);
-    });
+    this.filters.forEach((filter) => {
+      filter(url, mergedOptions)
+    })
 
     try {
-      const response = await fetch(url, mergedOptions);
-      
+      const response = await fetch(url, mergedOptions)
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const data = await response.json();
-      return data as T;
+      const data = await response.json()
+      return data as T
     } catch (error) {
-      console.error('Request failed:', error);
-      throw error;
+      console.error("Request failed:", error)
+      throw error
     }
   }
 
@@ -61,8 +61,8 @@ export class RequestUtil {
   async get<T = any>(url: string, options: RequestInit = {}): Promise<T> {
     return this.request<T>(url, {
       ...options,
-      method: 'GET',
-    });
+      method: "GET",
+    })
   }
 
   /**
@@ -71,9 +71,9 @@ export class RequestUtil {
   async post<T = any>(url: string, data: any, options: RequestInit = {}): Promise<T> {
     return this.request<T>(url, {
       ...options,
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(data),
-    });
+    })
   }
 
   /**
@@ -82,9 +82,9 @@ export class RequestUtil {
   async put<T = any>(url: string, data: any, options: RequestInit = {}): Promise<T> {
     return this.request<T>(url, {
       ...options,
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(data),
-    });
+    })
   }
 
   /**
@@ -93,7 +93,7 @@ export class RequestUtil {
   async delete<T = any>(url: string, options: RequestInit = {}): Promise<T> {
     return this.request<T>(url, {
       ...options,
-      method: 'DELETE',
-    });
+      method: "DELETE",
+    })
   }
 }

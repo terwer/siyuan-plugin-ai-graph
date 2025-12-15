@@ -37,8 +37,7 @@
         ],
         "allowImportingTsExtensions": true,
         "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "skipLibCheck": true
+        "forceConsistentCasingInFileNames": true
     },
     "include": [
         "tools/**/*.ts",
