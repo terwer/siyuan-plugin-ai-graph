@@ -28,8 +28,8 @@ describe("AI Graph Core Tests", () => {
     entityExtractor = new EntityExtractor()
     // 添加更通用的地名规则用于测试
     entityExtractor.addCustomEntityType("location", [/北京/g, /上海/g, /中国/g])
-    // 不配置LLM，使用规则提取
-    // entityExtractor.configureLLM(llmConfig)
+    // 配置LLM
+    entityExtractor.configureLLM(llmConfig)
   })
 
   afterAll(async () => {
