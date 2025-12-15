@@ -34,9 +34,8 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { Graph } from '@antv/g6'
 import { GraphAPIService } from '../api/graph-api'
-import { DatabaseManager } from '../data/db/DatabaseManager'
+import { DatabaseManagerAdapter } from '../data/db/DatabaseManagerAdapter'
 import { workspaceDir } from '../Constants'
-
 // 定义 props
 interface Props {
   pluginInstance: any
@@ -62,10 +61,8 @@ let graphAPIService: GraphAPIService | null = null
 const initServices = async () => {
   try {
     // 初始化数据库管理器
-    // 使用思源笔记的工作空间目录下的ai_graph.db文件
-    const dbPath = `${workspaceDir}/ai_graph.db`
-    const dbManager = new DatabaseManager(dbPath)
-    
+    // 对于Electron环境，使用IndexedDB作为平滑过渡方案
+    const dbManager = new DatabaseManagerAdapter("indexeddb")    
     // 初始化图数据服务
     graphAPIService = new GraphAPIService(dbManager)
   } catch (error) {

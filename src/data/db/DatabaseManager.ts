@@ -333,7 +333,7 @@ export class DatabaseManager {
       const query = `SELECT entity_id as id, entity_name as name, entity_type as type, doc_id as docId, 
                    start_pos as startPos, end_pos as endPos, source, confidence, properties
                    FROM entities`
-      
+
       const stmt = this.db.prepare(query)
       const result = stmt.all()
 
@@ -393,7 +393,7 @@ export class DatabaseManager {
       const query = `SELECT rel_id as id, source_entity_id as sourceEntityId, target_entity_id as targetEntityId, 
                    rel_type as type, doc_id as docId, confidence, source, evidence_text as evidenceText, properties
                    FROM relationships`
-      
+
       const stmt = this.db.prepare(query)
       const result = stmt.all()
 

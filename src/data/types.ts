@@ -74,14 +74,12 @@ export interface SearchOptions {
 }
 
 // 搜索结果类型
-export interface SearchResult {
-  docId: string
-  title: string
-  snippet: string
-  relevance: number
-  date?: number
+export interface SearchResult<T = any> {
+  item: T
+  score: number
+  highlights: string[]
+  matchPositions: number[]
 }
-
 // 网络图类型
 export interface NetworkGraph {
   nodes: Array<{

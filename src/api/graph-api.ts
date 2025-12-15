@@ -1,4 +1,4 @@
-import { DatabaseManager } from "../data/db/DatabaseManager"
+import { DatabaseManagerAdapter } from "../data/db/DatabaseManagerAdapter"
 import { SearchAPI } from "../data/search/SearchAPI"
 import type { NetworkGraph } from "../data/types"
 
@@ -8,9 +8,9 @@ import type { NetworkGraph } from "../data/types"
  */
 export class GraphAPIService {
   private searchAPI: SearchAPI
-  private dbManager: DatabaseManager
+  private dbManager: DatabaseManagerAdapter
 
-  constructor(dbManager: DatabaseManager) {
+  constructor(dbManager: DatabaseManagerAdapter) {
     this.dbManager = dbManager
     this.searchAPI = new SearchAPI(dbManager)
   }
@@ -24,7 +24,7 @@ export class GraphAPIService {
     try {
       // 1. 搜索实体
       const entityResults = await this.searchAPI.searchEntities(query)
-      
+
       if (entityResults.length === 0) {
         return { nodes: [], edges: [] }
       }
@@ -114,7 +114,7 @@ export class GraphAPIService {
     try {
       // 获取所有实体
       const allEntities = await this.dbManager.getAllEntities()
-      
+
       if (allEntities.length === 0) {
         return { nodes: [], edges: [] }
       }
@@ -133,7 +133,7 @@ export class GraphAPIService {
 
       // 获取所有关系
       const allRelationships = await this.dbManager.getAllRelationships()
-      
+
       // 构建边
       const edges = allRelationships.map((relationship) => ({
         source: `node_${relationship.sourceEntityId}`,
