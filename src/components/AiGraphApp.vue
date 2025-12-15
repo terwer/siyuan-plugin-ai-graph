@@ -33,6 +33,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { Graph } from '@antv/g6'
+import { GraphAPIService } from '../api/graph-api'
+import { DatabaseManager } from '../data/db/DatabaseManager'
+import { workspaceDir } from '../Constants'
 
 // 定义 props
 interface Props {
@@ -52,33 +55,34 @@ const graphInstance = ref(null)
 // 获取国际化资源
 const i18n = pluginInstance.i18n
 
+// 初始化图数据服务
+let graphAPIService: GraphAPIService | null = null
+
+// 初始化服务
+const initServices = async () => {
+  try {
+    // 初始化数据库管理器
+    // 使用思源笔记的工作空间目录下的ai_graph.db文件
+    const dbPath = `${workspaceDir}/ai_graph.db`
+    const dbManager = new DatabaseManager(dbPath)
+    
+    // 初始化图数据服务
+    graphAPIService = new GraphAPIService(dbManager)
+  } catch (error) {
+    console.error('Failed to initialize services:', error)
+  }
+}
+
 // 生成知识图谱
 const generateGraph = async () => {
-  if (isGenerating.value) return
+  if (isGenerating.value || !graphAPIService) return
   
   isGenerating.value = true
   try {
-    // 模拟获取图数据
-    // TODO: 实际应该从数据库或API获取真实的图数据
-    const mockData = {
-      nodes: [
-        { id: 'node1', label: '人工智能' },
-        { id: 'node2', label: '机器学习' },
-        { id: 'node3', label: '深度学习' },
-        { id: 'node4', label: '神经网络' },
-        { id: 'node5', label: 'CNN' },
-        { id: 'node6', label: 'RNN' },
-      ],
-      edges: [
-        { source: 'node1', target: 'node2' },
-        { source: 'node2', target: 'node3' },
-        { source: 'node3', target: 'node4' },
-        { source: 'node4', target: 'node5' },
-        { source: 'node4', target: 'node6' },
-      ],
-    }
+    // 获取真实的图数据
+    const data = await graphAPIService.getAllGraphData()
     
-    graphData.value = mockData
+    graphData.value = data
     
     // 等待DOM更新后渲染图
     await nextTick()
@@ -220,6 +224,23 @@ const renderGraph = async () => {
 const exportGraph = () => {
   console.log('Exporting knowledge graph...')
   // TODO: 实现知识图谱导出逻辑
+  // 可以导出为JSON、图片或其他格式
+  if (graphInstance.value) {
+    // 示例：导出为JSON格式
+    const graphData = graphInstance.value.save(); // G6的save方法
+    const jsonData = JSON.stringify(graphData, null, 2);
+    
+    // 创建下载链接
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'knowledge-graph-data.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 }
 
 // 组件挂载时的初始化
@@ -231,6 +252,9 @@ onMounted(() => {
   } catch (e) {
     console.error('Failed to get version:', e)
   }
+  
+  // 初始化服务
+  initServices()
   
   // 添加窗口大小变化监听器
   const handleResize = () => {
