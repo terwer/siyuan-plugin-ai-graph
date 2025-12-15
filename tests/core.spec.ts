@@ -1,4 +1,4 @@
-import { DatabaseManager, Document, EntityExtractor, LLMConfig, Tokenizer } from "../src/data"
+import { DatabaseManager, Document, DocumentProcessor, EntityExtractor, LLMConfig, Tokenizer } from "../src/data"
 
 import { afterAll, beforeAll, describe, it, expect } from "vitest"
 
@@ -97,26 +97,27 @@ describe("AI Graph Core Tests", () => {
     })
   })
 
-  // describe('Document Processor Tests', () => {
-  //   test('should process document completely', async () => {
-  //     const documentProcessor = new DocumentProcessor(dbManager);
-  //
-  //     const testDoc: Document = {
-  //       docId: 'test_doc_id_2',
-  //       title: '测试文档',
-  //       content: '张三是李四的同事，他们都在阿里巴巴工作。',
-  //       createdAt: Date.now(),
-  //       updatedAt: Date.now(),
-  //     };
-  //
-  //     // 处理文档
-  //     const result = await documentProcessor.processDocument(testDoc);
-  //
-  //     // 验证处理结果
-  //     expect(result).toBeDefined();
-  //     expect(result).toHaveProperty('tokens');
-  //     expect(result).toHaveProperty('entities');
-  //     expect(result).toHaveProperty('relationships');
-  //   });
-  // });
+  describe("Document Processor Tests", () => {
+    it("should process document completely", async () => {
+      const documentProcessor = new DocumentProcessor(dbManager)
+
+      const testDoc: Document = {
+        docId: "test_doc_id_2",
+        title: "测试文档",
+        content: "张三是李四的同事，他们都在阿里巴巴工作。",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }
+
+      // 处理文档
+      const result = await documentProcessor.processDocument(testDoc)
+
+      // 验证处理结果
+      expect(result).toBeDefined()
+      console.log("result:", result)
+      expect(result).toHaveProperty("tokens")
+      expect(result).toHaveProperty("entities")
+      expect(result).toHaveProperty("relationships")
+    })
+  })
 })
