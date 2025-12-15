@@ -303,28 +303,7 @@ export class IndexedDBManager {
     })
   }
 
-  /**
-   * 获取所有实体
-   */
-  async getAllEntities(): Promise<Entity[]> {
-    const db = await this.getDB()
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(["entities"], "readonly")
-      const store = transaction.objectStore("entities")
 
-      const request = store.getAll()
-
-      request.onsuccess = (event) => {
-        const result = (event.target as IDBRequest).result as Entity[]
-        resolve(result)
-      }
-
-      request.onerror = (event) => {
-        console.error("Failed to get all entities:", event)
-        reject(new Error("Failed to get all entities"))
-      }
-    })
-  }
 
   /**
    * 保存关系

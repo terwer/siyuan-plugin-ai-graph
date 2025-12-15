@@ -56,12 +56,7 @@ export class DatabaseManagerAdapter {
     return this.dbManager.getEntities(docId, entityType)
   }
 
-  /**
-   * 获取所有实体
-   */
-  async getAllEntities(): Promise<Entity[]> {
-    return this.dbManager.getAllEntities()
-  }
+
 
   /**
    * 保存关系

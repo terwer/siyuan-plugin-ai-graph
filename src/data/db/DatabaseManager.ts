@@ -323,30 +323,7 @@ export class DatabaseManager {
     }
   }
 
-  /**
-   * 获取所有实体
-   */
-  async getAllEntities(): Promise<Entity[]> {
-    if (!this.db) return []
 
-    try {
-      const query = `SELECT entity_id as id, entity_name as name, entity_type as type, doc_id as docId, 
-                   start_pos as startPos, end_pos as endPos, source, confidence, properties
-                   FROM entities`
-
-      const stmt = this.db.prepare(query)
-      const result = stmt.all()
-
-      // 解析properties
-      return result.map((row: any) => ({
-        ...row,
-        properties: row.properties ? JSON.parse(row.properties) : undefined,
-      }))
-    } catch (error) {
-      console.error("Failed to get all entities:", error)
-      return []
-    }
-  }
 
   // 关系相关操作
   async saveRelationships(relationships: Relationship[]): Promise<void> {

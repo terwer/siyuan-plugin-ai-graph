@@ -106,52 +106,5 @@ export class GraphAPIService {
     return colorMap[entityType.toLowerCase()] || colorMap["default"]
   }
 
-  /**
-   * 获取所有实体的图谱数据
-   * @returns G6兼容的图数据格式
-   */
-  async getAllGraphData(): Promise<any> {
-    try {
-      // 获取所有实体
-      const allEntities = await this.dbManager.getAllEntities()
 
-      if (allEntities.length === 0) {
-        return { nodes: [], edges: [] }
-      }
-
-      // 构建节点
-      const nodes = allEntities.map((entity) => ({
-        id: `node_${entity.id}`,
-        label: entity.name,
-        type: entity.type,
-        style: {
-          fill: this.getNodeColorByType(entity.type),
-          stroke: "#5B8FF9",
-        },
-        size: 40,
-      }))
-
-      // 获取所有关系
-      const allRelationships = await this.dbManager.getAllRelationships()
-
-      // 构建边
-      const edges = allRelationships.map((relationship) => ({
-        source: `node_${relationship.sourceEntityId}`,
-        target: `node_${relationship.targetEntityId}`,
-        label: relationship.type,
-        style: {
-          stroke: "#ccc",
-          endArrow: {
-            path: "M 0,0 L 8,4 L 8,-4 Z",
-            fill: "#ccc",
-          },
-        },
-      }))
-
-      return { nodes, edges }
-    } catch (error) {
-      console.error("Error getting all graph data:", error)
-      throw error
-    }
-  }
 }

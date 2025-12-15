@@ -1,8 +1,8 @@
-import type { Document, Token, Entity, Relationship, LLMConfig } from "../types"
-import { Tokenizer } from "./Tokenizer"
+import { DatabaseManagerAdapter } from "../db/DatabaseManagerAdapter"
 import { EntityExtractor } from "../extractor/EntityExtractor"
 import { RelationExtractor } from "../extractor/RelationExtractor"
-import { DatabaseManager } from "../db/DatabaseManager"
+import type { Document, Entity, LLMConfig, Relationship, Token } from "../types"
+import { Tokenizer } from "./Tokenizer"
 
 /**
  * 文档处理器，负责文档的完整处理流程
@@ -11,9 +11,9 @@ export class DocumentProcessor {
   private tokenizer: Tokenizer
   private entityExtractor: EntityExtractor
   private relationExtractor: RelationExtractor
-  private dbManager: DatabaseManager
+  private dbManager: DatabaseManagerAdapter
 
-  constructor(dbManager: DatabaseManager) {
+  constructor(dbManager: DatabaseManagerAdapter) {
     this.tokenizer = new Tokenizer()
     this.entityExtractor = new EntityExtractor()
     this.relationExtractor = new RelationExtractor()
