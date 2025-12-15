@@ -1,5 +1,6 @@
-import { DataType, ErrorCode, MilvusClient } from "@zilliz/milvus2-sdk-node"
+/* eslint-disable */
 import type { Document, Entity, Relationship, Token } from "../types"
+import { type DataType, type ErrorCode, type MilvusClient } from "@zilliz/milvus2-sdk-node"
 
 /**
  * Milvus 向量数据库管理器
@@ -18,6 +19,7 @@ export class MilvusManager {
    */
   async connect(): Promise<void> {
     try {
+      const { DataType, ErrorCode, MilvusClient } = await import("@zilliz/milvus2-sdk-node")
       this.client = new MilvusClient({
         address: this.milvusAddress,
       })

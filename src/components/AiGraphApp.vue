@@ -76,8 +76,126 @@ const generateGraph = async () => {
   
   isGenerating.value = true
   try {
-    // 获取真实的图数据
-    const data = await graphAPIService.getAllGraphData()
+    // 新版数据
+    const data = {
+      tokens: [
+        { text: '张三', start: 0, end: 2, type: 'chinese', source: 'llm' },
+        { text: '是', start: 2, end: 3, type: 'chinese', source: 'llm' },
+        { text: '李四', start: 3, end: 5, type: 'chinese', source: 'llm' },
+        { text: '的', start: 5, end: 6, type: 'chinese', source: 'llm' },
+        { text: '同事', start: 6, end: 8, type: 'chinese', source: 'llm' },
+        { text: '，', start: 8, end: 9, type: 'punctuation', source: 'llm' },
+        { text: '他们', start: 9, end: 11, type: 'chinese', source: 'llm' },
+        { text: '都', start: 11, end: 12, type: 'chinese', source: 'llm' },
+        { text: '在', start: 12, end: 13, type: 'chinese', source: 'llm' },
+        {
+          text: '阿里巴巴',
+          start: 13,
+          end: 17,
+          type: 'chinese',
+          source: 'llm'
+        },
+        { text: '工作', start: 17, end: 19, type: 'chinese', source: 'llm' },
+        {
+          text: '。',
+          start: 19,
+          end: 20,
+          type: 'punctuation',
+          source: 'llm'
+        }
+      ],
+      entities: [
+        {
+          id: 1,
+          name: '张三',
+          type: '人名',
+          docId: 'test_doc_id_2',
+          startPos: 0,
+          endPos: 2,
+          source: 'llm',
+          confidence: 0.9,
+          properties: undefined
+        },
+        {
+          id: 2,
+          name: '李四',
+          type: '人名',
+          docId: 'test_doc_id_2',
+          startPos: 3,
+          endPos: 5,
+          source: 'llm',
+          confidence: 0.9,
+          properties: undefined
+        },
+        {
+          id: 3,
+          name: '阿里巴巴',
+          type: '组织名',
+          docId: 'test_doc_id_2',
+          startPos: 10,
+          endPos: 14,
+          source: 'llm',
+          confidence: 0.9,
+          properties: undefined
+        }
+      ],
+      relationships: [
+        {
+          sourceEntityId: 1,
+          targetEntityId: 2,
+          type: 'cooccur',
+          docId: 'test_doc_id_2',
+          confidence: 0.5,
+          source: 'cooccur',
+          evidenceText: '张三是李四的同事，他们都在阿里巴巴工作'
+        },
+        {
+          sourceEntityId: 1,
+          targetEntityId: 3,
+          type: 'cooccur',
+          docId: 'test_doc_id_2',
+          confidence: 0.5,
+          source: 'cooccur',
+          evidenceText: '张三是李四的同事，他们都在阿里巴巴工作'
+        },
+        {
+          sourceEntityId: 2,
+          targetEntityId: 3,
+          type: 'cooccur',
+          docId: 'test_doc_id_2',
+          confidence: 0.5,
+          source: 'cooccur',
+          evidenceText: '张三是李四的同事，他们都在阿里巴巴工作'
+        },
+        {
+          sourceEntityId: 1,
+          targetEntityId: 2,
+          type: 'associate',
+          docId: 'test_doc_id_2',
+          confidence: 0.9,
+          source: 'llm',
+          evidenceText: '张三是李四的同事'
+        },
+        {
+          sourceEntityId: 1,
+          targetEntityId: 3,
+          type: 'belong_to',
+          docId: 'test_doc_id_2',
+          confidence: 0.9,
+          source: 'llm',
+          evidenceText: '他们都在阿里巴巴工作'
+        },
+        {
+          sourceEntityId: 2,
+          targetEntityId: 3,
+          type: 'belong_to',
+          docId: 'test_doc_id_2',
+          confidence: 0.9,
+          source: 'llm',
+          evidenceText: '他们都在阿里巴巴工作'
+        }
+      ]
+    }
     
     graphData.value = data
     
@@ -204,16 +322,66 @@ const renderGraph = async () => {
       },
     })
     
+    // 转换数据格式以适配 G6
+    const g6Data = transformDataToG6Format(graphData.value)
+    
     // 加载数据
-    graphInstance.value.data(graphData.value)
+    graphInstance.value.data(g6Data)
     
     // 渲染图
     graphInstance.value.render()
     
     // 添加调试日志
-    console.log('Graph rendered with data:', graphData.value)
+    console.log('Graph rendered with data:', g6Data)
   } catch (error) {
     console.error('Error creating or rendering G6 graph:', error)
+  }
+}
+
+// 转换数据格式以适配 G6
+const transformDataToG6Format = (data) => {
+  // 创建节点映射
+  const nodeMap = new Map()
+  const nodes = []
+  const edges = []
+  
+  // 处理实体节点
+  if (data.entities && Array.isArray(data.entities)) {
+    data.entities.forEach(entity => {
+      const nodeId = `entity_${entity.id}`
+      if (!nodeMap.has(nodeId)) {
+        nodeMap.set(nodeId, true)
+        nodes.push({
+          id: nodeId,
+          label: entity.name,
+          entityType: entity.type,
+          ...entity
+        })
+      }
+    })
+  }
+  
+  // 处理关系边
+  if (data.relationships && Array.isArray(data.relationships)) {
+    data.relationships.forEach(relationship => {
+      const sourceNodeId = `entity_${relationship.sourceEntityId}`
+      const targetNodeId = `entity_${relationship.targetEntityId}`
+      
+      // 确保源节点和目标节点都存在
+      if (nodeMap.has(sourceNodeId) && nodeMap.has(targetNodeId)) {
+        edges.push({
+          source: sourceNodeId,
+          target: targetNodeId,
+          label: relationship.type,
+          ...relationship
+        })
+      }
+    })
+  }
+  
+  return {
+    nodes,
+    edges
   }
 }
 

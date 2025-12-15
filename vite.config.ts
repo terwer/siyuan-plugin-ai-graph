@@ -102,7 +102,7 @@ export default defineConfig({
 
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ["siyuan", "process", "better-sqlite3", "nodejieba"],
+      external: ["siyuan", "process", "better-sqlite3", "nodejieba", "@zilliz/milvus2-sdk-node"],
 
       output: {
         entryFileNames: "[name].js",
