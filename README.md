@@ -18,9 +18,10 @@ A SiYuan note plugin that generates an inverted index based on semantic segmenta
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
-# Build	npm run build
+# Build
+pnpm build
 ```
 
 ## Core Components
@@ -32,7 +33,7 @@ npm install
 
 ## Usage
 
-See `examples/usage-example.ts` for detailed usage examples of all core features.
+See `examples/usage-example.spec.ts` for detailed usage examples of all core features.
 
 ## License
 
