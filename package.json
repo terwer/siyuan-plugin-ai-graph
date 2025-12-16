@@ -31,7 +31,7 @@
     "@types/node": "^22.19.0",
     "@types/better-sqlite3": "^7.6.10",
     "@typescript-eslint/eslint-plugin": "^8.49.0",
-    "@vitejs/plugin-vue": "^6.0.1",
+    "@vitejs/plugin-vue": "^6.0.3",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
     "@zilliz/milvus2-sdk-node": "^2.6.5",
