@@ -11,15 +11,6 @@ importers:
       '@antv/g6':
         specifier: 4.8.24
         version: 4.8.24
-      '@types/better-sqlite3':
-        specifier: ^7.6.10
-        version: 7.6.13
-      better-sqlite3:
-        specifier: ^9.6.0
-        version: 9.6.0
-      nodejieba:
-        specifier: ^2.6.0
-        version: 2.6.0
       vue:
         specifier: ^3.5.13
         version: 3.5.24(typescript@5.9.3)
@@ -30,6 +21,9 @@ importers:
       '@terwer/eslint-config-custom':
         specifier: ^1.3.4
         version: 1.3.6(@nuxt/eslint-config@0.1.1(eslint@8.57.1))(@typescript-eslint/eslint-plugin@8.49.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.2(eslint@8.57.1))(eslint-config-turbo@1.13.4(eslint@8.57.1))(eslint-plugin-prettier@4.2.5(eslint-config-prettier@8.10.2(eslint@8.57.1))(eslint@8.57.1)(prettier@2.8.8))(eslint-plugin-svelte@2.46.1(eslint@8.57.1)(svelte@3.59.2)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(eslint-plugin-vue@9.33.0(eslint@8.57.1))(eslint@8.57.1)(prettier-plugin-svelte@2.10.1(prettier@2.8.8)(svelte@3.59.2))(prettier@2.8.8)(typescript@5.9.3)
+      '@types/better-sqlite3':
+        specifier: ^7.6.10
+        version: 7.6.13
       '@types/minimist':
         specifier: 1.2.5
         version: 1.2.5
@@ -51,6 +45,9 @@ importers:
       '@zilliz/milvus2-sdk-node':
         specifier: ^2.6.5
         version: 2.6.5
+      better-sqlite3:
+        specifier: ^9.6.0
+        version: 9.6.0
       fast-glob:
         specifier: ^3.3.3
         version: 3.3.3
@@ -60,6 +57,9 @@ importers:
       minimist:
         specifier: ^1.2.8
         version: 1.2.8
+      nodejieba:
+        specifier: ^2.6.0
+        version: 2.6.0
       rollup-plugin-livereload:
         specifier: ^2.0.5
         version: 2.0.5
@@ -88,8 +88,8 @@ importers:
         specifier: ^3.1.4
         version: 3.1.4(vite@7.2.2(@types/node@22.19.0)(stylus@0.64.0)(terser@5.44.1))
       vite-tsconfig-paths:
-        specifier: ^5.1.4
-        version: 5.1.4(typescript@5.9.3)(vite@7.2.2(@types/node@22.19.0)(stylus@0.64.0)(terser@5.44.1))
+        specifier: ^6.0.1
+        version: 6.0.1(typescript@5.9.3)(vite@7.2.2(@types/node@22.19.0)(stylus@0.64.0)(terser@5.44.1))
       vitest:
         specifier: ^4.0.8
         version: 4.0.8(@types/node@22.19.0)(jsdom@27.1.0)(stylus@0.64.0)(terser@5.44.1)
@@ -706,8 +706,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@rushstack/eslint-patch@1.14.1':
-    resolution: {integrity: sha512-jGTk8UD/RdjsNZW8qq10r0RBvxL8OWtoT+kImlzPDFilmozzM+9QmIJsmze9UiSBrFU45ZxhTYBypn9q9z/VfQ==}
+  '@rushstack/eslint-patch@1.15.0':
+    resolution: {integrity: sha512-ojSshQPKwVvSMR8yT2L/QtUkV5SXi/IfDiJ4/8d6UbTPjiHVmxZzUAzGD8Tzks1b9+qQkZa0isUOvYObedITaw==}
 
   '@rushstack/node-core-library@5.18.0':
     resolution: {integrity: sha512-XDebtBdw5S3SuZIt+Ra2NieT8kQ3D2Ow1HxhDQ/2soinswnOu9e7S69VSwTOLlQnx5mpWbONu+5JJjDxMAb6Fw==}
@@ -2030,8 +2030,8 @@ packages:
     resolution: {integrity: sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==}
     engines: {node: '>=14'}
 
-  js-yaml@4.1.0:
-    resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
+  js-yaml@4.1.1:
+    resolution: {integrity: sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==}
     hasBin: true
 
   jsdom@27.1.0:
@@ -2982,8 +2982,8 @@ packages:
     peerDependencies:
       vite: ^5.0.0 || ^6.0.0 || ^7.0.0
 
-  vite-tsconfig-paths@5.1.4:
-    resolution: {integrity: sha512-cYj0LRuLV2c2sMqhqhGpaO3LretdtMn/BVX4cPLanIZuwwrkVl+lK84E/miEXkCHWXuq65rhNN4rXsBcOB3S4w==}
+  vite-tsconfig-paths@6.0.1:
+    resolution: {integrity: sha512-OQuYkfCQhc2T+n//0N7/oogTosgiSyZQ7dydrpUlH5SbnFTtplpekdY4GMi6jDwEpiwWlqeUJMyPfC2ePM1+2A==}
     peerDependencies:
       vite: '*'
     peerDependenciesMeta:
@@ -3582,7 +3582,7 @@ snapshots:
       globals: 13.24.0
       ignore: 5.3.2
       import-fresh: 3.3.1
-      js-yaml: 4.1.0
+      js-yaml: 4.1.1
       minimatch: 3.1.2
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
@@ -3721,7 +3721,7 @@ snapshots:
 
   '@nuxt/eslint-config@0.1.1(eslint@8.57.1)':
     dependencies:
-      '@rushstack/eslint-patch': 1.14.1
+      '@rushstack/eslint-patch': 1.15.0
       '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@4.9.5)
       '@typescript-eslint/parser': 5.62.0(eslint@8.57.1)(typescript@4.9.5)
       eslint: 8.57.1
@@ -3861,7 +3861,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.53.1':
     optional: true
 
-  '@rushstack/eslint-patch@1.14.1': {}
+  '@rushstack/eslint-patch@1.15.0': {}
 
   '@rushstack/node-core-library@5.18.0(@types/node@22.19.0)':
     dependencies:
@@ -4999,7 +4999,7 @@ snapshots:
       imurmurhash: 0.1.4
       is-glob: 4.0.3
       is-path-inside: 3.0.3
-      js-yaml: 4.1.0
+      js-yaml: 4.1.1
       json-stable-stringify-without-jsonify: 1.0.1
       levn: 0.4.1
       lodash.merge: 4.6.2
@@ -5409,7 +5409,7 @@ snapshots:
 
   js-cookie@3.0.5: {}
 
-  js-yaml@4.1.0:
+  js-yaml@4.1.1:
     dependencies:
       argparse: 2.0.1
 
@@ -6453,7 +6453,7 @@ snapshots:
       tinyglobby: 0.2.15
       vite: 7.2.2(@types/node@22.19.0)(stylus@0.64.0)(terser@5.44.1)
 
-  vite-tsconfig-paths@5.1.4(typescript@5.9.3)(vite@7.2.2(@types/node@22.19.0)(stylus@0.64.0)(terser@5.44.1)):
+  vite-tsconfig-paths@6.0.1(typescript@5.9.3)(vite@7.2.2(@types/node@22.19.0)(stylus@0.64.0)(terser@5.44.1)):
     dependencies:
       debug: 4.4.3
       globrex: 0.1.2
