@@ -38,7 +38,7 @@
     "better-sqlite3": "^9.6.0",
     "nodejieba": "^2.6.0",
     "fast-glob": "^3.3.3",
-    "jsdom": "^27.1.0",
+    "jsdom": "^27.3.0",
     "minimist": "^1.2.8",
     "rollup-plugin-livereload": "^2.0.5",
     "siyuan": "^1.1.5",
